@@ -1,5 +1,5 @@
 ---
-layout : post
+layout : page
 ---
 # github的个人博客搭建
 
