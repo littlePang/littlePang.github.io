@@ -56,7 +56,7 @@ layout : post
 
 接下来就是如何使用jekyll来方便的写博客了.
 
-关于jekylly的东西,可以到[jekyll中文文档](http://jekyllcn.com/)去瞅瞅.
+关于jekyll的东西,可以到[jekyll中文文档](http://jekyllcn.com/)去瞅瞅.
 
 而我安装jekyll的时候又是一堆坑,说起来就是一把心酸泪啊([我的jekyll安装之路]()).
 
