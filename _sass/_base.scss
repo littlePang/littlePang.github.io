@@ -139,12 +139,15 @@ code {
 
 code {
     padding: 1px 5px;
+    font-style:oblique;
+    background-color: rgb(81, 65, 65);
 }
 
 pre {
     padding: 8px 12px;
     overflow-x: auto;
-
+    border: 1px solid white;
+    background-color: rgb(81, 65, 65);
     > code {
         border: 0;
         padding-right: 0;
