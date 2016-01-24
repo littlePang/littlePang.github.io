@@ -130,9 +130,11 @@ blockquote {
 pre,
 code {
     font-size: 15px;
-    border: 1px solid $grey-color-light;
+    //border: 1px solid white;//$grey-color-light;
     border-radius: 3px;
-    background-color: #eef;
+    //background-color: #eef;
+   // background-color: rgb(81, 65, 65);
+    backgroud: #333333;
 }
 
 code {
