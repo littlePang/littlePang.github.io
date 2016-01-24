@@ -37,7 +37,8 @@ cd到 解压后的ruby根目录下,依次执行以下命令
 安好之后那就再来一波jekyll安装呗,再次执行 `sudo gem install jekyll` 又出现错误,那一刻我的内心是崩溃的:
 
     ERROR:  While executing gem ...   (Gem::Exception)
-    Unable to require openssl, install OpenSSL and rebuild ruby (preferred) or use non-HTTPS sources
+    Unable to require openssl, install OpenSSL
+    and rebuild ruby (preferred) or use non-HTTPS sources
 
 查了下,出现这个的原因是gem使用的源是https的,https要求的证书拿不到,解决方案就是把它换成http的, 执行下面两个命令:
 
