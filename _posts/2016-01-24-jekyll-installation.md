@@ -1,5 +1,6 @@
 ---
 layout: post
+category: 新技能get
 ---
 
 # jekyll安装之旅
@@ -7,6 +8,7 @@ layout: post
 jekyll的安装说起来也是一把心酸泪,我本来以为挺简单一个事儿,就直接跟着[官方文档](http://jekyllcn.com/docs/installation/)来呗, 我是用的ubuntu14.04,由于jekyll依赖ruby,所以我就安个ruby呗,`sudo apt-get install ruby`,
 
 安装ruby倒是挺顺利的,安完ruby,那自然就该按文档上说的来安装jekyll咯 `sudo gem install jekyll`,可是谁曾想到,居然报错说,ruby的版本太低了,至少要2.0的, 那就没办法咯,只有把刚装的那个ruby干掉了 `sudo apt-get remove ruby`
+
 
 怒了,那就安装个最新的版的ruby呗,跑去官网下载最新版本的ruby ([官网](http://www.ruby-lang.org/en/))
 
