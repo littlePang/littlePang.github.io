@@ -6,6 +6,8 @@ layout: post
 
 ## __config.yml配置文件
 
+
+
 配置详解: [中文](http://jekyllcn.com/docs/configuration/) and [英文](http://jekyllrb.com/docs/configuration/)
 
     # 目录结构

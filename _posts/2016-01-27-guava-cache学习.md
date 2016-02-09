@@ -1,3 +1,8 @@
+---
+layout : post
+category: 新技能get
+---
+
 # guava cache
 
 ## 个人yy
@@ -5,6 +10,8 @@
 guavaCache 如何实现的缓存? 内部持有一个Map?
 
 如何实现 定时刷新 ? 有定时任务定时清理缓存中的对象?
+
+
 
 segment的作用
 
