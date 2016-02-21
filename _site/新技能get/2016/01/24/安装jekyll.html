@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>安装jekyll</title>
+  <meta name="description" content="jekyll安装之旅jekyll的安装说起来也是一把心酸泪,我本来以为挺简单一个事儿,就直接跟着官方文档来呗, 我是用的ubuntu14.04,由于jekyll依赖ruby,所以我就安个ruby呗,sudo apt-get install ruby,安装ruby倒是挺顺利的,安完ruby,那自然就该按文档上说的来...">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/myStyle.css">
+  <link rel="canonical" href="http://littlepang.github.io/%E6%96%B0%E6%8A%80%E8%83%BDget/2016/01/24/%E5%AE%89%E8%A3%85jekyll.html">
+</head>
+
+
+  <body>
+
+    <header>
+
+  <div class="wrapper">
+
+    <!--<a class="site-title" href="/">小胖的博客</a>-->
+    <a class="site-title" href="/"><img src="/assets/picture/head.png"  /></a>
+
+  </div>
+
+</header>
+
+
+        <div id="nav">
+          <h2> &nbsp;分类 </h2>
+  <ul class="category-list">
+      
+            
+                <li>
+                <a href="/stuff"> stuff (3) </a>
+                </li>
+            
+      
+            
+                <li style="background-color: #444">
+                <a href="/新技能get"> 新技能get (2) </a>
+                </li>
+            
+      
+            
+                <li>
+                <a href="/源码学习"> 源码学习 (1) </a>
+                </li>
+            
+      
+  </ul>
+
+        </div>
+
+    <div class="page-content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">安装jekyll</h1>
+    <p class="post-meta"><time datetime="2016-01-24T00:00:00+08:00" itemprop="datePublished">Jan 24, 2016</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <h1 id="jekyll">jekyll安装之旅</h1>
+
+<p>jekyll的安装说起来也是一把心酸泪,我本来以为挺简单一个事儿,就直接跟着<a href="http://jekyllcn.com/docs/installation/">官方文档</a>来呗, 我是用的ubuntu14.04,由于jekyll依赖ruby,所以我就安个ruby呗,<code class="highlighter-rouge">sudo apt-get install ruby</code>,</p>
+
+<p>安装ruby倒是挺顺利的,安完ruby,那自然就该按文档上说的来安装jekyll咯 <code class="highlighter-rouge">sudo gem install jekyll</code>,可是谁曾想到,居然报错说,ruby的版本太低了,至少要2.0的, 那就没办法咯,只有把刚装的那个ruby干掉了 <code class="highlighter-rouge">sudo apt-get remove ruby</code></p>
+
+<p>怒了,那就安装个最新的版的ruby呗,跑去官网下载最新版本的ruby (<a href="http://www.ruby-lang.org/en/">官网</a>)</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>tar -xzvf ruby版本 -C 指定解压目录
+</code></pre>
+</div>
+
+<p>cd到 解压后的ruby根目录下,依次执行以下命令</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ ./configure
+$ make
+$ sudo make install
+</code></pre>
+</div>
+
+<p>完成以上三步后ruby就安装完成了,使用 <code class="highlighter-rouge">ruby --version</code> 看看ruby版本,应该就没什么问题了.</p>
+
+<p>下面又到了jekyll的时候了, <code class="highlighter-rouge">gem install jekyll</code> 出现了以下错误一枚:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>ERROR:  Loading command: install (LoadError)
+ cannot load such file -- zlib
+ERROR:  While executing gem ... (NoMethodError)
+undefined method 'invoke_with_build_args' for nil:NilClass
+</code></pre>
+</div>
+
+<p>这个错误的原因是依赖的zlib那个包没安装,那咋整呢,其实也蛮简单,在ruby根目录下执行一下命令</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$cd ext/zlib
+$sudo ruby ./extconf.rb
+$sudo make
+$sudo make install
+</code></pre>
+</div>
+
+<p>安好之后那就再来一波jekyll安装呗,再次执行 <code class="highlighter-rouge">sudo gem install jekyll</code> 又出现错误,那一刻我的内心是崩溃的:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>ERROR:  While executing gem ...   (Gem::Exception)
+Unable to require openssl, install OpenSSL
+and rebuild ruby (preferred) or use non-HTTPS sources
+</code></pre>
+</div>
+
+<p>查了下,出现这个的原因是gem使用的源是https的,https要求的证书拿不到,解决方案就是把它换成http的, 执行下面两个命令:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>gem source -r https://rubygems.org/
+gem source -a http://rubygems.org/
+</code></pre>
+</div>
+
+<p>抱着一颗绝望的心最后再执行了一次 <code class="highlighter-rouge">sudo gem install jekyll</code> ,娃哈哈,终于成功了.</p>
+
+<p>接下来,就可以看看<a href="http://jekyllcn.com/docs/quickstart/">使用文档</a>,尽情的玩转jekyll了.</p>
+
+  </div>
+
+</article>
+
+      </div>
+    </div>
+
+    <footer>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="my-footer">
+        <ul class="contact-list">
+          <li>小胖的博客</li>
+          <p>搭个自己的小博客,给自己一个瞎BB的地方</p>
+          <li><a href="https://github.com/littlePang"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">littlePang</span></a>
+</li>
+          <li><a href="mailto:wj940096538@163.com">wj940096538@163.com</a></li>
+        </ul>
+     </div>
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

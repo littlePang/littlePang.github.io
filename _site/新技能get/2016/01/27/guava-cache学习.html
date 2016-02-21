@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Guava Cache学习</title>
+  <meta name="description" content="guava cache个人yyguavaCache 如何实现的缓存? 内部持有一个Map?如何实现 定时刷新 ? 有定时任务定时清理缓存中的对象?">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/myStyle.css">
+  <link rel="canonical" href="http://littlepang.github.io/%E6%96%B0%E6%8A%80%E8%83%BDget/2016/01/27/guava-cache%E5%AD%A6%E4%B9%A0.html">
+</head>
+
+
+  <body>
+
+    <header>
+
+  <div class="wrapper">
+
+    <!--<a class="site-title" href="/">小胖的博客</a>-->
+    <a class="site-title" href="/"><img src="/assets/picture/head.png"  /></a>
+
+  </div>
+
+</header>
+
+
+        <div id="nav">
+          <h2> &nbsp;分类 </h2>
+  <ul class="category-list">
+      
+            
+                <li>
+                <a href="/stuff"> stuff (2) </a>
+                </li>
+            
+      
+            
+                <li style="background-color: #444">
+                <a href="/新技能get"> 新技能get (4) </a>
+                </li>
+            
+      
+  </ul>
+
+        </div>
+
+    <div class="page-content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Guava Cache学习</h1>
+    <p class="post-meta"><time datetime="2016-01-27T00:00:00+08:00" itemprop="datePublished">Jan 27, 2016</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <h1 id="guava-cache">guava cache</h1>
+
+<h2 id="yy">个人yy</h2>
+
+<p>guavaCache 如何实现的缓存? 内部持有一个Map?</p>
+
+<p>如何实现 定时刷新 ? 有定时任务定时清理缓存中的对象?</p>
+
+<p>segment的作用</p>
+
+<p>weight 的作用
+如果设置了,权重,那么它会影响初始化的大小,如果有个权重为5的对象,那它就相当于有5个权重为1的对象</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>int initialCapacity = Math.min(builder.getInitialCapacity(), MAXIMUM_CAPACITY);
+if (evictsBySize() &amp;&amp; !customWeigher()) {
+  initialCapacity = Math.min(initialCapacity, (int) maxWeight);
+}
+</code></pre>
+</div>
+
+<p>concurrencyLevel 影响分段个数</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>int segmentShift = 0;
+int segmentCount = 1;
+while (segmentCount &lt; concurrencyLevel
+       &amp;&amp; (!evictsBySize() || segmentCount * 20 &lt;= maxWeight)) {
+  ++segmentShift;
+  segmentCount &lt;&lt;= 1;
+}
+this.segmentShift = 32 - segmentShift;
+segmentMask = segmentCount - 1;
+
+this.segments = newSegmentArray(segmentCount);
+
+int segmentCapacity = initialCapacity / segmentCount;
+if (segmentCapacity * segmentCount &lt; initialCapacity) {
+  ++segmentCapacity;
+}
+
+int segmentSize = 1;
+while (segmentSize &lt; segmentCapacity) {
+  segmentSize &lt;&lt;= 1;
+}
+</code></pre>
+</div>
+
+<p>tricker : 计时器</p>
+
+<h2 id="section">网上资料</h2>
+
+<p>网上关于guavaCache的使用的文章蛮多,但是讲如何实现的并不多,关于guava cache如何做的,
+找到这篇好文 <a href="http://www.blogjava.net/DLevin/archive/2013/10/20/404847.html">Java Cache系列之Guava Cache实现详解</a>
+,这篇文章介绍了,guava cache 的数据结构,接口设计,以及代码实现逻辑,讲的挺好的(此处应竖起大拇指)</p>
+
+<h2 id="section-1">源码学习</h2>
+
+<p>看完了上面那篇文章后,对Guava Cache有了一定的了解,下面就到了自己看源码,解答自己的疑问,梳理实现逻辑的时候了.</p>
+
+<h3 id="section-2">初次见面</h3>
+
+<p>既然Guava Cache 是由 CacheBuilder来配置以及实例化的,那自然要先看CacheBuilder咯.</p>
+
+<p>进入 CacheBuilder的源码,首先进入视野的就是CacheBuilder类上的一大片注释说明:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>/**
+* &lt;p&gt;A builder of {@link LoadingCache} and {@link Cache} instances having any combination of the
+* following features:
+*
+* &lt;ul&gt;
+* &lt;li&gt;automatic loading of entries into the cache
+* &lt;li&gt;least-recently-used eviction when a maximum size is exceeded
+* &lt;li&gt;time-based expiration of entries, measured since last access or last write
+* &lt;li&gt;keys automatically wrapped in {@linkplain WeakReference weak} references
+* &lt;li&gt;values automatically wrapped in {@linkplain WeakReference weak} or
+*     {@linkplain SoftReference soft} references
+* &lt;li&gt;notification of evicted (or otherwise removed) entries
+* &lt;li&gt;accumulation of cache access statistics
+* &lt;/ul&gt;
+*
+... 把说明都看了一遍, 主要是介绍了这个Builder构建的Cache含有的 特性,简单的使用例子,以及特性使用说明.
+</code></pre>
+</div>
+
+<h3 id="section-3">初步认识</h3>
+
+<p>看完注释,往下面走,可以看到CacheBuilder里面
+定义的一些属性以及它的默认值(初始化大小,并发等级,计数器,对象移除监听器等)</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>private static final int DEFAULT_INITIAL_CAPACITY = 16;
+private static final int DEFAULT_CONCURRENCY_LEVEL = 4;
+private static final int DEFAULT_EXPIRATION_NANOS = 0;
+private static final int DEFAULT_REFRESH_NANOS = 0;
+...
+int initialCapacity = UNSET_INT;
+int concurrencyLevel = UNSET_INT;
+long maximumSize = UNSET_INT;
+long maximumWeight = UNSET_INT;
+Weigher&lt;? super K, ? super V&gt; weigher;
+Strength keyStrength;
+Strength valueStrength;
+long expireAfterWriteNanos = UNSET_INT;
+long expireAfterAccessNanos = UNSET_INT;
+long refreshNanos = UNSET_INT;
+Equivalence&lt;Object&gt; keyEquivalence;
+Equivalence&lt;Object&gt; valueEquivalence;
+...
+</code></pre>
+</div>
+
+<p>再往下走,可以看到是一些设置Cache特性的一些方法(设置大小,value对象比较器,key比较器,并发等级,权重设置器,
+引用类型(软引用,弱引用,强引用), 刷新时间, 过期时间, 对象移除监听器等), 这里需要注意一点的是,所有的这些
+属性设置方法中,都有对属性是否被设置过的判断,如果以及被设置过了,再次设置的时候,会抛出异常,也就是说,
+这些属性是不能被重复设置的.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>public CacheBuilder&lt;K, V&gt; initialCapacity(int initialCapacity)
+public CacheBuilder&lt;K, V&gt; concurrencyLevel(int concurrencyLevel)
+public CacheBuilder&lt;K, V&gt; weakKeys()
+public CacheBuilder&lt;K, V&gt; expireAfterWrite(long duration, TimeUnit unit)
+public CacheBuilder&lt;K, V&gt; refreshAfterWrite(long duration, TimeUnit unit)
+...
+</code></pre>
+</div>
+
+<p>drainReferenceQueues() 中为何最多排除 16个entry</p>
+
+  </div>
+
+</article>
+
+      </div>
+    </div>
+
+    <footer>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="my-footer">
+        <ul class="contact-list">
+          <li>小胖的博客</li>
+          <p>搭个自己的小博客,给自己一个瞎BB的地方</p>
+          <li><a href="https://github.com/littlePang"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">littlePang</span></a>
+</li>
+          <li><a href="mailto:wj940096538@163.com">wj940096538@163.com</a></li>
+        </ul>
+     </div>
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

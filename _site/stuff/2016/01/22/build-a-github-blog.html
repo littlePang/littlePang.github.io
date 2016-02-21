@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Build A Github Blog</title>
+  <meta name="description" content="github的个人博客搭建最近想搞个个人博客来写东西,但是又觉得如果用csdn或者博客园啥的来写的话,每次都需要在网页上编辑,太麻烦了,所以呢,在网上瞎搜了一下, git+github+markdown+jekyll 或许是个不错的选择呢.网上看了蛮多人写的,主要还是根据这篇博客搞起来的.页面风格,感觉这个页面是...">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/myStyle.css">
+  <link rel="canonical" href="http://littlepang.github.io/stuff/2016/01/22/build-a-github-blog.html">
+</head>
+
+
+  <body>
+
+    <header>
+
+  <div class="wrapper">
+
+    <!--<a class="site-title" href="/">小胖的博客</a>-->
+    <a class="site-title" href="/"><img src="/assets/picture/head.png"  /></a>
+
+  </div>
+
+</header>
+
+
+        <div id="nav">
+          <h2> &nbsp;分类 </h2>
+  <ul class="category-list">
+      
+            
+                <li style="background-color: #444">
+                <a href="/stuff"> stuff (1) </a>
+                </li>
+            
+      
+            
+                <li>
+                <a href="/新技能get"> 新技能get (4) </a>
+                </li>
+            
+      
+  </ul>
+
+        </div>
+
+    <div class="page-content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Build A Github Blog</h1>
+    <p class="post-meta"><time datetime="2016-01-22T00:00:00+08:00" itemprop="datePublished">Jan 22, 2016</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <h1 id="github">github的个人博客搭建</h1>
+
+<p>最近想搞个个人博客来写东西,但是又觉得如果用csdn或者博客园啥的来写的话,每次都需要在网页上编辑,太麻烦了,所以呢,在网上瞎搜了一下, git+github+markdown+jekyll 或许是个不错的选择呢.</p>
+
+<p>网上看了蛮多人写的,主要还是根据<a href="http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html">这篇博客</a>搞起来的.</p>
+
+<p>页面风格,感觉<a href="http://minixalpha.github.io/">这个页面</a>是我的菜,所以就大概照着搞了搞.不过什么分类啦,归档什么的还没整,毕竟作为一个患有_未知恐惧症_的人来说,直接copy过来用,不知道别人如何做的,如何实现的,总感觉有哪里不对.</p>
+
+<p>下面就来说说,这个我用来给自己瞎BB的博客是如何起来的吧.</p>
+
+<h2 id="github-1">注册github帐号</h2>
+
+<p>这个比较简单啦,就是到<a href="https://github.com/littlePang/littlePang.github.io">github</a>
+,填一下用户名,邮箱,密码就可以正常注册了.
+<img src="/assets/picture/1.png" alt="图片" /></p>
+
+<h2 id="section">创建博客所用的仓库</h2>
+
+<p>正常注册完成之后,登录即可看到以下页面了.点击页面中的<strong>new repository</strong>按钮.</p>
+
+<p><img src="/assets/picture/2.png" alt="" /></p>
+
+<p>进入到新仓库创建页面后,在Repository Name那里填写userName.github.io这种格式的仓库名称,下面是对这个仓库的一些描述,以及仓库的一些属性配置,默认就好,填完了之后,就可以点击<strong>create repository</strong>按钮创建一个新的仓库了.</p>
+
+<p><img src="/assets/picture/3.png" alt="" /></p>
+
+<h2 id="section-1">使用这个仓库生成个人博客首页</h2>
+
+<p>新仓库创建好后,就进入到了下面这个页面,在这个页面中点 <strong>setting</strong>,进入设置页面</p>
+
+<p><img src="/assets/picture/4.png" alt="" /></p>
+
+<p>进入到设置页面后,将页面往下滑,就能看到<strong>Git Pages</strong>模块了,点击那里的<strong>Launch automatic page generator</strong></p>
+
+<p><img src="/assets/picture/5.png" alt="" /></p>
+
+<p>进入页面后,中间是你博客首页的内容.如果不想写,就直接往下拉,可以看到<strong>continue to layouts</strong>, 机智的你肯定知道,点它就对了.</p>
+
+<p><img src="/assets/picture/6.png" alt="" /></p>
+
+<p>接下来的页面,就跳转到为你的博客选择一个你喜欢的布局了(反正后面要用jekyll自己搞,这里就随便选啦…),选完之后,就点<em>publish page</em>**就好了.</p>
+
+<p><img src="/assets/picture/7.png" alt="" /></p>
+
+<p>现在你的个人博客已经就绪了哟,域名就是你的那个仓库名(username.github.io),
+现在试着去访问下你的博客吧</p>
+
+<p><img src="/assets/picture/8.png" alt="" /></p>
+
+<h2 id="section-2">最后</h2>
+<p>到这里,你的个人博客的首页,就已经搭起来了,如果你还对git的使用不太熟悉的话,现在就应该打开你的搜索页面,搜索git的使用了呢.</p>
+
+<p>接下来就是如何使用jekyll来方便的写博客了.</p>
+
+<p>关于jekyll的东西,可以到<a href="http://jekyllcn.com/">jekyll中文文档</a>去瞅瞅.</p>
+
+<p>而我安装jekyll的时候又是一堆坑,说起来就是一把心酸泪啊(<a href="">我的jekyll安装之路</a>).</p>
+
+<p>写到这里,不知不觉,截了一大堆图,说了一大堆话了,看了看右上角的时间,已经半夜00:30了,是时候,洗洗睡了….</p>
+
+  </div>
+
+</article>
+
+      </div>
+    </div>
+
+    <footer>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="my-footer">
+        <ul class="contact-list">
+          <li>小胖的博客</li>
+          <p>搭个自己的小博客,给自己一个瞎BB的地方</p>
+          <li><a href="https://github.com/littlePang"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">littlePang</span></a>
+</li>
+          <li><a href="mailto:wj940096538@163.com">wj940096538@163.com</a></li>
+        </ul>
+     </div>
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
