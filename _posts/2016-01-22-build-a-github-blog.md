@@ -1,6 +1,6 @@
 ---
 layout : post
-category: 新技能get
+category: stuff
 ---
 # github的个人博客搭建
 
