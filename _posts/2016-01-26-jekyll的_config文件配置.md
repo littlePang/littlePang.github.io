@@ -1,5 +1,6 @@
 ---
 layout: post
+category: stuff
 ---
 
 # jekyll用到过的一些配置
