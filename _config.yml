@@ -5,7 +5,7 @@ description: 搭个自己的小博客,给自己一个瞎BB的地方
 baseurl: ""
 url: "http://littlepang.github.io"
 github_username:  littlePang
-paginate: 2
+paginate: 5
 
 # Build settings
 markdown: kramdown
