@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+  <channel>
+    <title>林安亚的博客</title>
+    <link>http://painterlin.com</link>
+    <description>My personal blog</description>
+    
+      <item>
+        <title>软引用和弱引用的实现</title>
+        <link>http://painterlin.com/2016/01/27/%E8%BD%AF%E5%BC%95%E7%94%A8%E5%92%8C%E5%BC%B1%E5%BC%95%E7%94%A8%E7%9A%84%E5%AE%9E%E7%8E%B0.html</link>
+        <guid isPermaLink="true">http://painterlin.com/2016/01/27/%E8%BD%AF%E5%BC%95%E7%94%A8%E5%92%8C%E5%BC%B1%E5%BC%95%E7%94%A8%E7%9A%84%E5%AE%9E%E7%8E%B0.html</guid>
+        <pubDate>Wed, 27 Jan 2016 00:00:00 +0800</pubDate>
+        <description>&lt;h1&gt;软引用和弱引用的实现&lt;/h1&gt;
+</description>
+      </item>
+    
+      <item>
+        <title>Jekyll插件</title>
+        <link>http://painterlin.com/2016/01/27/jekyll%E6%8F%92%E4%BB%B6.html</link>
+        <guid isPermaLink="true">http://painterlin.com/2016/01/27/jekyll%E6%8F%92%E4%BB%B6.html</guid>
+        <pubDate>Wed, 27 Jan 2016 00:00:00 +0800</pubDate>
+        <description>&lt;h1&gt;jekyll 插件包&lt;/h1&gt;
+
+&lt;p&gt;代码高亮包 : pygments.rb
+sudo gem install pygments.rb&lt;/p&gt;
+
+&lt;p&gt;redcarpet : markdown解析器
+sudo gem install redcarpet&lt;/p&gt;
+</description>
+      </item>
+    
+      <item>
+        <title>Guava Cache学习</title>
+        <link>http://painterlin.com/2016/01/27/guava-cache%E5%AD%A6%E4%B9%A0.html</link>
+        <guid isPermaLink="true">http://painterlin.com/2016/01/27/guava-cache%E5%AD%A6%E4%B9%A0.html</guid>
+        <pubDate>Wed, 27 Jan 2016 00:00:00 +0800</pubDate>
+        <description>&lt;h1&gt;guava cache&lt;/h1&gt;
+
+&lt;h2&gt;个人yy&lt;/h2&gt;
+
+&lt;p&gt;guavaCache 如何实现的缓存? 内部持有一个Map?&lt;/p&gt;
+
+&lt;p&gt;如何实现 定时刷新 ? 有定时任务定时清理缓存中的对象?&lt;/p&gt;
+
+&lt;p&gt;segment的作用&lt;/p&gt;
+
+&lt;p&gt;weight 的作用
+如果设置了,权重,那么它会影响初始化的大小,如果有个权重为5的对象,那它就相当于有5个权重为1的对象&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-&quot; data-lang=&quot;&quot;&gt;int initialCapacity = Math.min(builder.getInitialCapacity(), MAXIMUM_CAPACITY);
+if (evictsBySize() &amp;amp;&amp;amp; !customWeigher()) {
+  initialCapacity = Math.min(initialCapacity, (int) maxWeight);
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;concurrencyLevel 影响分段个数&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-&quot; data-lang=&quot;&quot;&gt;int segmentShift = 0;
+int segmentCount = 1;
+while (segmentCount &amp;lt; concurrencyLevel
+       &amp;amp;&amp;amp; (!evictsBySize() || segmentCount * 20 &amp;lt;= maxWeight)) {
+  ++segmentShift;
+  segmentCount &amp;lt;&amp;lt;= 1;
+}
+this.segmentShift = 32 - segmentShift;
+segmentMask = segmentCount - 1;
+
+this.segments = newSegmentArray(segmentCount);
+
+int segmentCapacity = initialCapacity / segmentCount;
+if (segmentCapacity * segmentCount &amp;lt; initialCapacity) {
+  ++segmentCapacity;
+}
+
+int segmentSize = 1;
+while (segmentSize &amp;lt; segmentCapacity) {
+  segmentSize &amp;lt;&amp;lt;= 1;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;tricker : 计时器&lt;/p&gt;
+
+&lt;h2&gt;网上资料&lt;/h2&gt;
+
+&lt;p&gt;网上关于guavaCache的使用的文章蛮多,但是讲如何实现的并不多,关于guava cache如何做的,
+找到这篇好文 &lt;a href=&quot;http://www.blogjava.net/DLevin/archive/2013/10/20/404847.html&quot;&gt;Java Cache系列之Guava Cache实现详解&lt;/a&gt;
+,这篇文章介绍了,guava cache 的数据结构,接口设计,以及代码实现逻辑,讲的挺好的(此处应竖起大拇指)&lt;/p&gt;
+
+&lt;h2&gt;源码学习&lt;/h2&gt;
+
+&lt;p&gt;看完了上面那篇文章后,对Guava Cache有了一定的了解,下面就到了自己看源码,解答自己的疑问,梳理实现逻辑的时候了.&lt;/p&gt;
+
+&lt;h3&gt;初次见面&lt;/h3&gt;
+
+&lt;p&gt;既然Guava Cache 是由 CacheBuilder来配置以及实例化的,那自然要先看CacheBuilder咯.&lt;/p&gt;
+
+&lt;p&gt;进入 CacheBuilder的源码,首先进入视野的就是CacheBuilder类上的一大片注释说明:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-&quot; data-lang=&quot;&quot;&gt;/**
+* &amp;lt;p&amp;gt;A builder of {@link LoadingCache} and {@link Cache} instances having any combination of the
+* following features:
+*
+* &amp;lt;ul&amp;gt;
+* &amp;lt;li&amp;gt;automatic loading of entries into the cache
+* &amp;lt;li&amp;gt;least-recently-used eviction when a maximum size is exceeded
+* &amp;lt;li&amp;gt;time-based expiration of entries, measured since last access or last write
+* &amp;lt;li&amp;gt;keys automatically wrapped in {@linkplain WeakReference weak} references
+* &amp;lt;li&amp;gt;values automatically wrapped in {@linkplain WeakReference weak} or
+*     {@linkplain SoftReference soft} references
+* &amp;lt;li&amp;gt;notification of evicted (or otherwise removed) entries
+* &amp;lt;li&amp;gt;accumulation of cache access statistics
+* &amp;lt;/ul&amp;gt;
+*
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;把说明都看了一遍, 主要是介绍了这个Builder构建的Cache含有的
+特性,简单的使用例子,以及特性使用说明.&lt;/p&gt;
+
+&lt;h3&gt;初步认识&lt;/h3&gt;
+
+&lt;p&gt;看完注释,往下面走,可以看到CacheBuilder里面
+定义的一些属性以及它的默认值(初始化大小,并发等级,计数器,对象移除监听器等)&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-&quot; data-lang=&quot;&quot;&gt;private static final int DEFAULT_INITIAL_CAPACITY = 16;
+private static final int DEFAULT_CONCURRENCY_LEVEL = 4;
+private static final int DEFAULT_EXPIRATION_NANOS = 0;
+private static final int DEFAULT_REFRESH_NANOS = 0;
+...
+int initialCapacity = UNSET_INT;
+int concurrencyLevel = UNSET_INT;
+long maximumSize = UNSET_INT;
+long maximumWeight = UNSET_INT;
+Weigher&amp;lt;? super K, ? super V&amp;gt; weigher;
+Strength keyStrength;
+Strength valueStrength;
+long expireAfterWriteNanos = UNSET_INT;
+long expireAfterAccessNanos = UNSET_INT;
+long refreshNanos = UNSET_INT;
+Equivalence&amp;lt;Object&amp;gt; keyEquivalence;
+Equivalence&amp;lt;Object&amp;gt; valueEquivalence;
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;再往下走,可以看到是一些设置Cache特性的一些方法(设置大小,value对象比较器,key比较器,并发等级,权重设置器,
+引用类型(软引用,弱引用,强引用), 刷新时间, 过期时间, 对象移除监听器等), 这里需要注意一点的是,所有的这些
+属性设置方法中,都有对属性是否被设置过的判断,如果以及被设置过了,再次设置的时候,会抛出异常,也就是说,
+这些属性是不能被重复设置的.&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-&quot; data-lang=&quot;&quot;&gt;public CacheBuilder&amp;lt;K, V&amp;gt; initialCapacity(int initialCapacity)
+public CacheBuilder&amp;lt;K, V&amp;gt; concurrencyLevel(int concurrencyLevel)
+public CacheBuilder&amp;lt;K, V&amp;gt; weakKeys()
+public CacheBuilder&amp;lt;K, V&amp;gt; expireAfterWrite(long duration, TimeUnit unit)
+public CacheBuilder&amp;lt;K, V&amp;gt; refreshAfterWrite(long duration, TimeUnit unit)
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;drainReferenceQueues() 中为何最多排除 16个entry&lt;/p&gt;
+</description>
+      </item>
+    
+      <item>
+        <title>Jekyll的_config文件配置</title>
+        <link>http://painterlin.com/2016/01/26/jekyll%E7%9A%84_config%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE.html</link>
+        <guid isPermaLink="true">http://painterlin.com/2016/01/26/jekyll%E7%9A%84_config%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE.html</guid>
+        <pubDate>Tue, 26 Jan 2016 00:00:00 +0800</pubDate>
+        <description>&lt;h1&gt;jekyll用到过的一些配置&lt;/h1&gt;
+
+&lt;h2&gt;__config.yml配置文件&lt;/h2&gt;
+
+&lt;p&gt;配置详解: &lt;a href=&quot;http://jekyllcn.com/docs/configuration/&quot;&gt;中文&lt;/a&gt; and &lt;a href=&quot;http://jekyllrb.com/docs/configuration/&quot;&gt;英文&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-&quot; data-lang=&quot;&quot;&gt;# 目录结构
+source:      .
+destination: ./_site
+plugins:     ./_plugins
+layouts:     ./_layouts
+data_source: ./_data
+collections: null
+
+# 阅读处理
+safe:         false
+include:      [&quot;.htaccess&quot;]
+exclude:      []
+keep_files:   [&quot;.git&quot;, &quot;.svn&quot;]
+encoding:     &quot;utf-8&quot;
+markdown_ext: &quot;markdown,mkdown,mkdn,mkd,md&quot;
+
+# 内容过滤
+show_drafts: null
+limit_posts: 0
+future:      true
+unpublished: false
+
+# 插件
+whitelist: []
+gems:      []
+
+# 转换
+markdown:    kramdown
+highlighter: rouge
+lsi:         false
+excerpt_separator: &quot;\n\n&quot;
+
+# 服务器选项
+detach:  false
+port:    4000
+host:    127.0.0.1
+baseurl: &quot;&quot; # does not include hostname
+
+# 输出
+permalink:     date
+paginate_path: /page:num
+timezone:      null
+
+quiet:    false
+defaults: []
+
+# Markdown 处理器
+rdiscount:
+  extensions: []
+
+redcarpet:
+  extensions: []
+
+kramdown:
+  auto_ids:       true
+  footnote_nr:    1
+  entity_output:  as_char
+  toc_levels:     1..6
+  smart_quotes:   lsquo,rsquo,ldquo,rdquo
+  enable_coderay: false
+
+  coderay:
+    coderay_wrap:              div
+    coderay_line_numbers:      inline
+    coderay_line_number_start: 1
+    coderay_tab_width:         4
+    coderay_bold_every:        10
+    coderay_css:               style
+
+# Conversion
+markdown:    kramdown
+highlighter: rouge
+lsi:         false
+excerpt_separator: &quot;\n\n&quot; #默认的文章摘要分割符号, 文章中出现这个分割符之前的内容作为文章摘要
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+      </item>
+    
+      <item>
+        <title>安装jekyll</title>
+        <link>http://painterlin.com/2016/01/24/%E5%AE%89%E8%A3%85jekyll.html</link>
+        <guid isPermaLink="true">http://painterlin.com/2016/01/24/%E5%AE%89%E8%A3%85jekyll.html</guid>
+        <pubDate>Sun, 24 Jan 2016 00:00:00 +0800</pubDate>
+        <description>&lt;h1&gt;jekyll安装之旅&lt;/h1&gt;
+
+&lt;p&gt;jekyll的安装说起来也是一把心酸泪,我本来以为挺简单一个事儿,就直接跟着&lt;a href=&quot;http://jekyllcn.com/docs/installation/&quot;&gt;官方文档&lt;/a&gt;来呗, 我是用的ubuntu14.04,由于jekyll依赖ruby,所以我就安个ruby呗,&lt;code&gt;sudo apt-get install ruby&lt;/code&gt;,&lt;/p&gt;
+
+&lt;p&gt;安装ruby倒是挺顺利的,安完ruby,那自然就该按文档上说的来安装jekyll咯 &lt;code&gt;sudo gem install jekyll&lt;/code&gt;,可是谁曾想到,居然报错说,ruby的版本太低了,至少要2.0的, 那就没办法咯,只有把刚装的那个ruby干掉了 &lt;code&gt;sudo apt-get remove ruby&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;怒了,那就安装个最新的版的ruby呗,跑去官网下载最新版本的ruby (&lt;a href=&quot;http://www.ruby-lang.org/en/&quot;&gt;官网&lt;/a&gt;)&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-&quot; data-lang=&quot;&quot;&gt;tar -xzvf ruby版本 -C 指定解压目录
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;cd到 解压后的ruby根目录下,依次执行以下命令&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-&quot; data-lang=&quot;&quot;&gt;$ ./configure
+$ make
+$ sudo make install
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;完成以上三步后ruby就安装完成了,使用 &lt;code&gt;ruby --version&lt;/code&gt; 看看ruby版本,应该就没什么问题了.&lt;/p&gt;
+
+&lt;p&gt;下面又到了jekyll的时候了, &lt;code&gt;gem install jekyll&lt;/code&gt; 出现了以下错误一枚:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-&quot; data-lang=&quot;&quot;&gt;ERROR:  Loading command: install (LoadError)
+ cannot load such file -- zlib
+ERROR:  While executing gem ... (NoMethodError)
+undefined method &#39;invoke_with_build_args&#39; for nil:NilClass
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;这个错误的原因是依赖的zlib那个包没安装,那咋整呢,其实也蛮简单,在ruby根目录下执行一下命令&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-&quot; data-lang=&quot;&quot;&gt;$cd ext/zlib
+$sudo ruby ./extconf.rb
+$sudo make
+$sudo make install
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;安好之后那就再来一波jekyll安装呗,再次执行 &lt;code&gt;sudo gem install jekyll&lt;/code&gt; 又出现错误,那一刻我的内心是崩溃的:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-&quot; data-lang=&quot;&quot;&gt;ERROR:  While executing gem ...   (Gem::Exception)
+Unable to require openssl, install OpenSSL
+and rebuild ruby (preferred) or use non-HTTPS sources
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;查了下,出现这个的原因是gem使用的源是https的,https要求的证书拿不到,解决方案就是把它换成http的, 执行下面两个命令:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-&quot; data-lang=&quot;&quot;&gt;gem source -r https://rubygems.org/
+gem source -a http://rubygems.org/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;抱着一颗绝望的心最后再执行了一次 &lt;code&gt;sudo gem install jekyll&lt;/code&gt; ,娃哈哈,终于成功了.&lt;/p&gt;
+
+&lt;p&gt;接下来,就可以看看&lt;a href=&quot;http://jekyllcn.com/docs/quickstart/&quot;&gt;使用文档&lt;/a&gt;,尽情的玩转jekyll了.&lt;/p&gt;
+</description>
+      </item>
+    
+      <item>
+        <title>Github个人博客搭建</title>
+        <link>http://painterlin.com/2016/01/22/github%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA.html</link>
+        <guid isPermaLink="true">http://painterlin.com/2016/01/22/github%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA.html</guid>
+        <pubDate>Fri, 22 Jan 2016 00:00:00 +0800</pubDate>
+        <description>&lt;h1&gt;github的个人博客搭建&lt;/h1&gt;
+
+&lt;p&gt;最近想搞个个人博客来写东西,但是又觉得如果用csdn或者博客园啥的来写的话,每次都需要在网页上编辑,太麻烦了,所以呢,在网上瞎搜了一下, git+github+markdown+jekyll 或许是个不错的选择呢.&lt;/p&gt;
+
+&lt;p&gt;网上看了蛮多人写的,主要还是根据&lt;a href=&quot;http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html&quot;&gt;这篇博客&lt;/a&gt;搞起来的.&lt;/p&gt;
+
+&lt;p&gt;页面风格,感觉&lt;a href=&quot;http://minixalpha.github.io/&quot;&gt;这个页面&lt;/a&gt;是我的菜,所以就大概照着搞了搞.不过什么分类啦,归档什么的还没整,毕竟作为一个患有&lt;em&gt;未知恐惧症&lt;/em&gt;的人来说,直接copy过来用,不知道别人如何做的,如何实现的,总感觉有哪里不对.&lt;/p&gt;
+
+&lt;p&gt;下面就来说说,这个我用来给自己瞎BB的博客是如何起来的吧.&lt;/p&gt;
+
+&lt;h2&gt;注册github帐号&lt;/h2&gt;
+
+&lt;p&gt;这个比较简单啦,就是到&lt;a href=&quot;https://github.com/littlePang/littlePang.github.io&quot;&gt;github&lt;/a&gt;
+,填一下用户名,邮箱,密码就可以正常注册了.
+&lt;img src=&quot;/assets/picture/1.png&quot; alt=&quot;图片&quot;&gt;&lt;/p&gt;
+
+&lt;h2&gt;创建博客所用的仓库&lt;/h2&gt;
+
+&lt;p&gt;正常注册完成之后,登录即可看到以下页面了.点击页面中的&lt;strong&gt;new repository&lt;/strong&gt;按钮.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/picture/2.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;进入到新仓库创建页面后,在Repository Name那里填写userName.github.io这种格式的仓库名称,下面是对这个仓库的一些描述,以及仓库的一些属性配置,默认就好,填完了之后,就可以点击&lt;strong&gt;create repository&lt;/strong&gt;按钮创建一个新的仓库了.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/picture/3.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+
+&lt;h2&gt;使用这个仓库生成个人博客首页&lt;/h2&gt;
+
+&lt;p&gt;新仓库创建好后,就进入到了下面这个页面,在这个页面中点 &lt;strong&gt;setting&lt;/strong&gt;,进入设置页面&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/picture/4.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;进入到设置页面后,将页面往下滑,就能看到&lt;strong&gt;Git Pages&lt;/strong&gt;模块了,点击那里的&lt;strong&gt;Launch automatic page generator&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/picture/5.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;进入页面后,中间是你博客首页的内容.如果不想写,就直接往下拉,可以看到&lt;strong&gt;continue to layouts&lt;/strong&gt;, 机智的你肯定知道,点它就对了.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/picture/6.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;接下来的页面,就跳转到为你的博客选择一个你喜欢的布局了(反正后面要用jekyll自己搞,这里就随便选啦...),选完之后,就点&lt;em&gt;publish page&lt;/em&gt;**就好了.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/picture/7.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;现在你的个人博客已经就绪了哟,域名就是你的那个仓库名(username.github.io),
+现在试着去访问下你的博客吧&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/picture/8.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+
+&lt;h2&gt;最后&lt;/h2&gt;
+
+&lt;p&gt;到这里,你的个人博客的首页,就已经搭起来了,如果你还对git的使用不太熟悉的话,现在就应该打开你的搜索页面,搜索git的使用了呢.&lt;/p&gt;
+
+&lt;p&gt;接下来就是如何使用jekyll来方便的写博客了.&lt;/p&gt;
+
+&lt;p&gt;关于jekyll的东西,可以到&lt;a href=&quot;http://jekyllcn.com/&quot;&gt;jekyll中文文档&lt;/a&gt;去瞅瞅.&lt;/p&gt;
+
+&lt;p&gt;而我安装jekyll的时候又是一堆坑,说起来就是一把心酸泪啊(&lt;a href=&quot;&quot;&gt;我的jekyll安装之路&lt;/a&gt;).&lt;/p&gt;
+
+&lt;p&gt;写到这里,不知不觉,截了一大堆图,说了一大堆话了,看了看右上角的时间,已经半夜00:30了,是时候,洗洗睡了....&lt;/p&gt;
+</description>
+      </item>
+    
+  </channel>
+</rss>

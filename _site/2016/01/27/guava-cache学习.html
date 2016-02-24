@@ -1,6 +1,107 @@
-<h1 id="guava-cache">guava cache</h1>
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+<title>Guava Cache学习 | 林安亚的博客</title>
+<meta name="author" content="Anya Lin">
 
-<h2 id="yy">个人yy</h2>
+
+<link rel="shortcut icon" href="/public/img/deer3.png" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/public/css/bootstrap.css">
+<link rel="stylesheet" href="/public/css/font-awesome.css">
+<link rel="stylesheet" href="/public/js/prettify/prettify.css">
+<link rel="stylesheet" href="/public/css/base.css">
+<link href="/pages/atom.xml" rel="alternate" title="林安亚的博客" type="application/atom+xml">
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3 col-lg-3 col-sm-13 col-xs-13 aside visible-md visible-lg">
+  <div class="row">
+    <div class="col-md-2 col-xs-2 aside1">
+      <br>
+      <a class="pjaxlink" href="/"><img src="/public/img/deer3.png" class="img-ronuded avatar" style="border-width:0px; border-color:#000"></a>
+      <br><br><br><br>
+      <ul class="nav nav-pills nav-stacked">
+             <!-- 这里是aside1的读书、生活、科研、技术、绘画-->
+         <li><a href="#stuff" data-toggle="tab">stuff</a></li>
+             <!-- 这里是aside1的读书、生活、科研、技术、绘画-->
+         <li><a href="#源码学习" data-toggle="tab">源码学习</a></li>
+        
+        <li><a href="#tags" data-toggle="tab">标签</a></li>  
+        <li><a class="pjaxlink" href="/pages/archive.html">归档</a></li>
+        <li><a class="pjaxlink" href="/pages/about.html">关于</a></li>  
+        <!-- <li><a href="#tags" data-toggle="tab"><i class="fa fa-tags fa-lg"></i></a></li>
+        <li><a class="pjaxlink" href="/pages/archive.html"><i class="fa fa-archive fa-lg"></i></a></li>
+        <li><a class="pjaxlink" href="/pages/about.html"><i class="fa fa-user fa-lg"></i></a></li>
+        这是原来现实汉字的代码，我改为了图标 -->
+      </ul>
+      <div class="aside1_bottom">
+        <table class="table table-condensed">
+          <tr>
+            <td><a href="/pages/atom.xml" target="_blank"><i class="fa fa-rss fa-lg" style="color:#fff;"></i></a></td>
+            <td><a href="mailto:lay.1010@hotmail.com"><i class="fa fa-envelope-o fa-lg" style="color:#fff;"></i></a></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div class="col-md-10 col-xs-10 aside2">
+      <div class="row">
+        <div class="tab-content"> 
+           
+            <div class="tab-pane" id="stuff">
+              <div class="list-group">
+                <!--<h2 class="center">stuff</h2>-->     <!--原来aside2上面的大标题-->
+                
+                  <a href="/2016/01/27/jekyll%E6%8F%92%E4%BB%B6.html" class="list-group-item-lay pjaxlink">Jekyll插件</a>
+                
+                  <a href="/2016/01/26/jekyll%E7%9A%84_config%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE.html" class="list-group-item-lay pjaxlink">Jekyll的_config文件配置</a>
+                
+                  <a href="/2016/01/24/%E5%AE%89%E8%A3%85jekyll.html" class="list-group-item-lay pjaxlink">安装jekyll</a>
+                
+                  <a href="/2016/01/22/github%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA.html" class="list-group-item-lay pjaxlink">Github个人博客搭建</a>
+                
+              </div>
+            </div>
+           
+            <div class="tab-pane" id="源码学习">
+              <div class="list-group">
+                <!--<h2 class="center">源码学习</h2>-->     <!--原来aside2上面的大标题-->
+                
+                  <a href="/2016/01/27/%E8%BD%AF%E5%BC%95%E7%94%A8%E5%92%8C%E5%BC%B1%E5%BC%95%E7%94%A8%E7%9A%84%E5%AE%9E%E7%8E%B0.html" class="list-group-item-lay pjaxlink">软引用和弱引用的实现</a>
+                
+                  <a href="/2016/01/27/guava-cache%E5%AD%A6%E4%B9%A0.html" class="list-group-item-lay pjaxlink">Guava Cache学习</a>
+                
+              </div>
+            </div>
+                
+          <div class="tab-pane" id="tags">
+            <div class="panel-group" id="accordion">
+              <!--<h2 class="center">标签</h2>-->
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="col-md-13 col-lg-13 col-sm-13 col-xs-13 aside3">
+        <div id="container">
+          <div id="pjax">
+            <div class="row">
+  <div class="col-md-13 aside3-title">
+    <br>
+    <h2 id="#identifier">Guava Cache学习</h2>
+    2016年01月27日
+  </div>
+  <div class="col-md-13 aside3-content">
+    <hr>
+    <div id="content">
+      <h1>guava cache</h1>
+
+<h2>个人yy</h2>
 
 <p>guavaCache 如何实现的缓存? 内部持有一个Map?</p>
 
@@ -10,17 +111,13 @@
 
 <p>weight 的作用
 如果设置了,权重,那么它会影响初始化的大小,如果有个权重为5的对象,那它就相当于有5个权重为1的对象</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>int initialCapacity = Math.min(builder.getInitialCapacity(), MAXIMUM_CAPACITY);
+<div class="highlight"><pre><code class="language-" data-lang="">int initialCapacity = Math.min(builder.getInitialCapacity(), MAXIMUM_CAPACITY);
 if (evictsBySize() &amp;&amp; !customWeigher()) {
   initialCapacity = Math.min(initialCapacity, (int) maxWeight);
 }
-</code></pre>
-</div>
-
+</code></pre></div>
 <p>concurrencyLevel 影响分段个数</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>int segmentShift = 0;
+<div class="highlight"><pre><code class="language-" data-lang="">int segmentShift = 0;
 int segmentCount = 1;
 while (segmentCount &lt; concurrencyLevel
        &amp;&amp; (!evictsBySize() || segmentCount * 20 &lt;= maxWeight)) {
@@ -41,28 +138,25 @@ int segmentSize = 1;
 while (segmentSize &lt; segmentCapacity) {
   segmentSize &lt;&lt;= 1;
 }
-</code></pre>
-</div>
-
+</code></pre></div>
 <p>tricker : 计时器</p>
 
-<h2 id="section">网上资料</h2>
+<h2>网上资料</h2>
 
 <p>网上关于guavaCache的使用的文章蛮多,但是讲如何实现的并不多,关于guava cache如何做的,
 找到这篇好文 <a href="http://www.blogjava.net/DLevin/archive/2013/10/20/404847.html">Java Cache系列之Guava Cache实现详解</a>
 ,这篇文章介绍了,guava cache 的数据结构,接口设计,以及代码实现逻辑,讲的挺好的(此处应竖起大拇指)</p>
 
-<h2 id="section-1">源码学习</h2>
+<h2>源码学习</h2>
 
 <p>看完了上面那篇文章后,对Guava Cache有了一定的了解,下面就到了自己看源码,解答自己的疑问,梳理实现逻辑的时候了.</p>
 
-<h3 id="section-2">初次见面</h3>
+<h3>初次见面</h3>
 
 <p>既然Guava Cache 是由 CacheBuilder来配置以及实例化的,那自然要先看CacheBuilder咯.</p>
 
 <p>进入 CacheBuilder的源码,首先进入视野的就是CacheBuilder类上的一大片注释说明:</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>/**
+<div class="highlight"><pre><code class="language-" data-lang="">/**
 * &lt;p&gt;A builder of {@link LoadingCache} and {@link Cache} instances having any combination of the
 * following features:
 *
@@ -77,16 +171,16 @@ while (segmentSize &lt; segmentCapacity) {
 * &lt;li&gt;accumulation of cache access statistics
 * &lt;/ul&gt;
 *
-... 把说明都看了一遍, 主要是介绍了这个Builder构建的Cache含有的 特性,简单的使用例子,以及特性使用说明.
-</code></pre>
-</div>
+...
+</code></pre></div>
+<p>把说明都看了一遍, 主要是介绍了这个Builder构建的Cache含有的
+特性,简单的使用例子,以及特性使用说明.</p>
 
-<h3 id="section-3">初步认识</h3>
+<h3>初步认识</h3>
 
 <p>看完注释,往下面走,可以看到CacheBuilder里面
 定义的一些属性以及它的默认值(初始化大小,并发等级,计数器,对象移除监听器等)</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>private static final int DEFAULT_INITIAL_CAPACITY = 16;
+<div class="highlight"><pre><code class="language-" data-lang="">private static final int DEFAULT_INITIAL_CAPACITY = 16;
 private static final int DEFAULT_CONCURRENCY_LEVEL = 4;
 private static final int DEFAULT_EXPIRATION_NANOS = 0;
 private static final int DEFAULT_REFRESH_NANOS = 0;
@@ -104,21 +198,76 @@ long refreshNanos = UNSET_INT;
 Equivalence&lt;Object&gt; keyEquivalence;
 Equivalence&lt;Object&gt; valueEquivalence;
 ...
-</code></pre>
-</div>
-
+</code></pre></div>
 <p>再往下走,可以看到是一些设置Cache特性的一些方法(设置大小,value对象比较器,key比较器,并发等级,权重设置器,
 引用类型(软引用,弱引用,强引用), 刷新时间, 过期时间, 对象移除监听器等), 这里需要注意一点的是,所有的这些
 属性设置方法中,都有对属性是否被设置过的判断,如果以及被设置过了,再次设置的时候,会抛出异常,也就是说,
 这些属性是不能被重复设置的.</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>public CacheBuilder&lt;K, V&gt; initialCapacity(int initialCapacity)
+<div class="highlight"><pre><code class="language-" data-lang="">public CacheBuilder&lt;K, V&gt; initialCapacity(int initialCapacity)
 public CacheBuilder&lt;K, V&gt; concurrencyLevel(int concurrencyLevel)
 public CacheBuilder&lt;K, V&gt; weakKeys()
 public CacheBuilder&lt;K, V&gt; expireAfterWrite(long duration, TimeUnit unit)
 public CacheBuilder&lt;K, V&gt; refreshAfterWrite(long duration, TimeUnit unit)
 ...
-</code></pre>
+</code></pre></div>
+<p>drainReferenceQueues() 中为何最多排除 16个entry</p>
+
+    </div>
+    <hr>
+    <div id="disqus_thread">
+  <button type="button" name="painterlin" class="btn btn-default show-commend">	
+  	<i class="fa fa-comment-o fa-lg" style="color: #16a095;"></i>     <!-- 修改显示评论按钮图标-->
+  </button>
 </div>
 
-<p>drainReferenceQueues() 中为何最多排除 16个entry</p>
+  </div>
+  <!-- 目录 -->
+  <div id="content_table" style="position:fixed;right:20px;top:120px;display:none;">
+    <div class="panel panel-success">
+      <div class="panel-body" id="nav"></div>
+    </div>
+  </div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="position:fixed;right:15px;top:62px;">
+  <button id="content_btn" class="btn btn-primary" style="width:43px; height:34px;">
+    <i class="fa fa-lg fa-plus"></i>
+  </button>
+</div>
+<div style="position:fixed;right:15px;top:20px;">
+  <button id="nav_btn" class="btn btn-primary">
+    <i class="fa fa-lg fa-navicon"></i>
+  </button>
+</div>
+<script type="text/javascript" src="/public/js/jquery.js"></script>
+<script type="text/javascript" src="/public/js/bootstrap.js"></script>
+<script src="/public/js/jquery.pjax.js"></script>
+<script src="/public/js/prettify/prettify.js"></script>
+<script src="/public/js/base.js"></script>
+<!--
+<script src="/public/js/jquery.scrollUp.js"></script>
+-->
+<script>
+    $('a[href="#读书"]').tab('show');
+</script>
+
+
+<!--button是右上方导航和显示目录的按钮-->
+
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-54262064-1', 'painterlin.com');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
