@@ -1,7 +1,12 @@
 ---
-layout : post
-category: 源码学习
+layout: post
+title: guavaCache学习
+category: 技术
+tags: guava
+keywords:
+description:
 ---
+
 
 # guava cache
 

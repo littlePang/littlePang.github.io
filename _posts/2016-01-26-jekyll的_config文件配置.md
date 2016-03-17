@@ -1,6 +1,10 @@
 ---
 layout: post
-category: stuff
+title: jekyll的配置
+category: 杂项
+tags: jekyll
+keywords:
+description:
 ---
 
 # jekyll用到过的一些配置

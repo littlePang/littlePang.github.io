@@ -1,23 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0">
   <channel>
-    <title>林安亚的博客</title>
-    <link>http://painterlin.com</link>
+    <title>小胖的博客</title>
+    <link>http://littlepang.github.io</link>
     <description>My personal blog</description>
     
       <item>
-        <title>软引用和弱引用的实现</title>
-        <link>http://painterlin.com/2016/01/27/%E8%BD%AF%E5%BC%95%E7%94%A8%E5%92%8C%E5%BC%B1%E5%BC%95%E7%94%A8%E7%9A%84%E5%AE%9E%E7%8E%B0.html</link>
-        <guid isPermaLink="true">http://painterlin.com/2016/01/27/%E8%BD%AF%E5%BC%95%E7%94%A8%E5%92%8C%E5%BC%B1%E5%BC%95%E7%94%A8%E7%9A%84%E5%AE%9E%E7%8E%B0.html</guid>
+        <title>SpingMvc的@Responsebody返回值中文乱码问题</title>
+        <link>http://littlepang.github.io/2016/03/14/SpringMvc%E8%BF%94%E5%9B%9E%E5%80%BC%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%E9%97%AE%E9%A2%98.html</link>
+        <guid isPermaLink="true">http://littlepang.github.io/2016/03/14/SpringMvc%E8%BF%94%E5%9B%9E%E5%80%BC%E4%B8%AD%E6%96%87%E4%B9%B1%E7%A0%81%E9%97%AE%E9%A2%98.html</guid>
+        <pubDate>Mon, 14 Mar 2016 00:00:00 +0800</pubDate>
+        <description>&lt;h1&gt;SpringMvc 返回值中文乱码问题&lt;/h1&gt;
+
+&lt;h2&gt;在springMvc的使用中,想要使用以下代码,返回一个包含,中文的字符串,然而返回结果里面的中文全都变成了乱码.&lt;/h2&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-&quot; data-lang=&quot;&quot;&gt;    @RequestMapping(&quot;/test&quot;)
+    @ResponseBody
+    public Object tgqServiceStandard(String domain, String orderNo) {
+        return &quot;这是一个测试Controller&quot;;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;解决方法&lt;/h2&gt;
+
+&lt;p&gt;在RequestMapping注解中加入如下的参数即可:&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-&quot; data-lang=&quot;&quot;&gt;    @RequestMapping(produces=&quot;text/plain;charset=UTF-8&quot;,value=&quot;/test&quot;)
+    @ResponseBody
+    public Object tgqServiceStandard(String domain, String orderNo) {
+        return &quot;这是一个测试Controller&quot;;
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;这样,返回值中的中文即可正常显示了.&lt;/p&gt;
+
+&lt;h2&gt;中文乱码产生原因&lt;/h2&gt;
+
+&lt;p&gt;在springMvc所使用的返回值装换器 org.springframework.http.converter.StringHttpMessageConverter 中.
+所使用的字符编码默认是 ISO-8859-1 , 所以字符串就乱码了&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-&quot; data-lang=&quot;&quot;&gt;public static final Charset DEFAULT_CHARSET = Charset.forName(&quot;ISO-8859-1&quot;);
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+      </item>
+    
+      <item>
+        <title>SpringIoc学习</title>
+        <link>http://littlepang.github.io/2016/03/10/springIOC.html</link>
+        <guid isPermaLink="true">http://littlepang.github.io/2016/03/10/springIOC.html</guid>
+        <pubDate>Thu, 10 Mar 2016 00:00:00 +0800</pubDate>
+        <description>&lt;h1&gt;spring IoC&lt;/h1&gt;
+
+&lt;p&gt;以下内容都是阅读 Spring技术内幕：深入解析Spring架构与设计原理（第2版）所写的&lt;/p&gt;
+
+&lt;h2&gt;IoC - Inversion of Control(控制反转)&lt;/h2&gt;
+
+&lt;h3&gt;什么是IoC?&lt;/h3&gt;
+
+&lt;p&gt;控制反转,也就是依赖对象的获取被反转了,将对象所依赖的对象的获取交由外部框架进行管理.&lt;/p&gt;
+
+&lt;h3&gt;注入方式&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;接口注入&lt;/li&gt;
+&lt;li&gt;setter注入&lt;/li&gt;
+&lt;li&gt;构造器注入&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;IoC的 BeanFactory和ApplicationContext&lt;/h2&gt;
+
+&lt;p&gt;springIoc主要接口设计
+&lt;img src=&quot;/assets/picture/springIocIntergface.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+
+&lt;p&gt;使用IoC容器在获取对象时,可以使用转义符&amp;quot;&amp;amp;&amp;quot;来获取一个bean的FactoryBean本身.
+FactoryBean是某个Bean的创建工厂,只能创建这种bean的工厂,类似于工厂模式.&lt;/p&gt;
+
+&lt;h2&gt;DefaultListableBeanFactory&lt;/h2&gt;
+</description>
+      </item>
+    
+      <item>
+        <title>jps,jstack</title>
+        <link>http://littlepang.github.io/2016/03/08/jps-%E6%9F%A5%E7%9C%8B%E5%BD%93%E5%89%8Djava%E8%BF%9B%E7%A8%8B.html</link>
+        <guid isPermaLink="true">http://littlepang.github.io/2016/03/08/jps-%E6%9F%A5%E7%9C%8B%E5%BD%93%E5%89%8Djava%E8%BF%9B%E7%A8%8B.html</guid>
+        <pubDate>Tue, 08 Mar 2016 00:00:00 +0800</pubDate>
+        <description>&lt;h1&gt;jps-查看当前java进程&lt;/h1&gt;
+
+&lt;p&gt;jps是jdk提供的一个查看当前java进程的小工具， 可以看做是JavaVirtual Machine Process Status Tool的缩写。&lt;/p&gt;
+
+&lt;p&gt;命令格式：jps [options ] [ hostid ]&lt;/p&gt;
+
+&lt;p&gt;-q：仅输出VM标识符，不包括classname,jar name,arguments in main method
+-m：输出main method的参数
+-l：输出完全的包名，应用主类名，jar的完全路径名
+-v：输出jvm参数
+-V：输出通过flag文件传递到JVM中的参数(.hotspotrc文件或-XX:Flags=所指定的文件
+-Joption：传递参数到vm,例如:-J-Xms512m&lt;/p&gt;
+
+&lt;h1&gt;jstack-&lt;/h1&gt;
+
+&lt;p&gt;执行时,出现:
+well-known file is not secure&lt;/p&gt;
+
+&lt;p&gt;这个的原因是: 需要执行jstack命令的用户和启动 jvm的用户是同一个,否则就会出现以上错误&lt;/p&gt;
+
+&lt;p&gt;妈蛋,本来说在开发机上玩玩这几个命令的,结果都因为上面一个原因,无法执行, ~_~&lt;/p&gt;
+</description>
+      </item>
+    
+      <item>
+        <title>软引用和弱引用</title>
+        <link>http://littlepang.github.io/2016/01/27/%E8%BD%AF%E5%BC%95%E7%94%A8%E5%92%8C%E5%BC%B1%E5%BC%95%E7%94%A8%E7%9A%84%E5%AE%9E%E7%8E%B0.html</link>
+        <guid isPermaLink="true">http://littlepang.github.io/2016/01/27/%E8%BD%AF%E5%BC%95%E7%94%A8%E5%92%8C%E5%BC%B1%E5%BC%95%E7%94%A8%E7%9A%84%E5%AE%9E%E7%8E%B0.html</guid>
         <pubDate>Wed, 27 Jan 2016 00:00:00 +0800</pubDate>
         <description>&lt;h1&gt;软引用和弱引用的实现&lt;/h1&gt;
 </description>
       </item>
     
       <item>
-        <title>Jekyll插件</title>
-        <link>http://painterlin.com/2016/01/27/jekyll%E6%8F%92%E4%BB%B6.html</link>
-        <guid isPermaLink="true">http://painterlin.com/2016/01/27/jekyll%E6%8F%92%E4%BB%B6.html</guid>
+        <title>jekyll插件</title>
+        <link>http://littlepang.github.io/2016/01/27/jekyll%E6%8F%92%E4%BB%B6.html</link>
+        <guid isPermaLink="true">http://littlepang.github.io/2016/01/27/jekyll%E6%8F%92%E4%BB%B6.html</guid>
         <pubDate>Wed, 27 Jan 2016 00:00:00 +0800</pubDate>
         <description>&lt;h1&gt;jekyll 插件包&lt;/h1&gt;
 
@@ -30,9 +127,9 @@ sudo gem install redcarpet&lt;/p&gt;
       </item>
     
       <item>
-        <title>Guava Cache学习</title>
-        <link>http://painterlin.com/2016/01/27/guava-cache%E5%AD%A6%E4%B9%A0.html</link>
-        <guid isPermaLink="true">http://painterlin.com/2016/01/27/guava-cache%E5%AD%A6%E4%B9%A0.html</guid>
+        <title>guavaCache学习</title>
+        <link>http://littlepang.github.io/2016/01/27/guava-cache%E5%AD%A6%E4%B9%A0.html</link>
+        <guid isPermaLink="true">http://littlepang.github.io/2016/01/27/guava-cache%E5%AD%A6%E4%B9%A0.html</guid>
         <pubDate>Wed, 27 Jan 2016 00:00:00 +0800</pubDate>
         <description>&lt;h1&gt;guava cache&lt;/h1&gt;
 
@@ -150,9 +247,9 @@ public CacheBuilder&amp;lt;K, V&amp;gt; refreshAfterWrite(long duration, TimeUni
       </item>
     
       <item>
-        <title>Jekyll的_config文件配置</title>
-        <link>http://painterlin.com/2016/01/26/jekyll%E7%9A%84_config%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE.html</link>
-        <guid isPermaLink="true">http://painterlin.com/2016/01/26/jekyll%E7%9A%84_config%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE.html</guid>
+        <title>jekyll的配置</title>
+        <link>http://littlepang.github.io/2016/01/26/jekyll%E7%9A%84_config%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE.html</link>
+        <guid isPermaLink="true">http://littlepang.github.io/2016/01/26/jekyll%E7%9A%84_config%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE.html</guid>
         <pubDate>Tue, 26 Jan 2016 00:00:00 +0800</pubDate>
         <description>&lt;h1&gt;jekyll用到过的一些配置&lt;/h1&gt;
 
@@ -237,9 +334,9 @@ excerpt_separator: &quot;\n\n&quot; #默认的文章摘要分割符号, 文章�
       </item>
     
       <item>
-        <title>安装jekyll</title>
-        <link>http://painterlin.com/2016/01/24/%E5%AE%89%E8%A3%85jekyll.html</link>
-        <guid isPermaLink="true">http://painterlin.com/2016/01/24/%E5%AE%89%E8%A3%85jekyll.html</guid>
+        <title>jekyll安装</title>
+        <link>http://littlepang.github.io/2016/01/24/%E5%AE%89%E8%A3%85jekyll.html</link>
+        <guid isPermaLink="true">http://littlepang.github.io/2016/01/24/%E5%AE%89%E8%A3%85jekyll.html</guid>
         <pubDate>Sun, 24 Jan 2016 00:00:00 +0800</pubDate>
         <description>&lt;h1&gt;jekyll安装之旅&lt;/h1&gt;
 
@@ -285,9 +382,9 @@ gem source -a http://rubygems.org/
       </item>
     
       <item>
-        <title>Github个人博客搭建</title>
-        <link>http://painterlin.com/2016/01/22/github%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA.html</link>
-        <guid isPermaLink="true">http://painterlin.com/2016/01/22/github%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA.html</guid>
+        <title>github的个人博客搭建</title>
+        <link>http://littlepang.github.io/2016/01/22/github%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA.html</link>
+        <guid isPermaLink="true">http://littlepang.github.io/2016/01/22/github%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%90%AD%E5%BB%BA.html</guid>
         <pubDate>Fri, 22 Jan 2016 00:00:00 +0800</pubDate>
         <description>&lt;h1&gt;github的个人博客搭建&lt;/h1&gt;
 
