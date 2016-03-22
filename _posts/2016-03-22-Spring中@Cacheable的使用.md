@@ -1,6 +1,6 @@
 ---
 layout: post
-title: git随笔
+title: spring中@Cacheable注解使用
 category: 技术
 tags: Spring
 keywords:
@@ -83,3 +83,5 @@ description:
 
 ##### 注意
 测试发现spring中是使用cache中的`public ValueWrapper get(Object o)`这个方法来判断是否需要执行实际的方法调用的,如果这个方法返回null,则目标方法会被执行一次.
+
+### 完整的测试小项目在 [boring_code_world仓库中](https://github.com/littlePang/boring_code_world/tree/cacheable_annotation_test)
