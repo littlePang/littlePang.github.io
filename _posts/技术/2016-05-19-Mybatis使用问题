@@ -1,0 +1,27 @@
+---
+layout: post
+title: Mybatis使用报错
+category: 技术
+tags: mybatis
+keywords:
+description:
+---
+
+平时使用Mybatis,可能会像下面这样使用:
+
+    public int countByCondition(Param param) {
+        return sqlSession.selectOne("TableDao.countByCondition", param);
+    }
+
+如果像上面这样使用Mybatis, 在JDK1.7下编译是没问题的, 但是如果你的发布编译系统中使用的是JDK1.6版本, 则编译时会报如下错误:
+> type parameters of T cannot be determined; no unique maximal instance exists for type variable T with upper bounds int,java.lang.Object`
+
+解决这个问题的方式有两种:
+
+1. 找发布编译系统负责人升级JDK版本 (真的好麻烦的说...)
+
+2. 修改代码返回值为包装类型:
+
+        public Integer countByCondition(Param param) {
+          return sqlSession.selectOne("TableDao.countByCondition", param);
+        }
