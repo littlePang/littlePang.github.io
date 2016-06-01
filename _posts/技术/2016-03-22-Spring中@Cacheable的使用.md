@@ -13,20 +13,19 @@ description:
 在调用被这个注解标识的方法时,会先判断,在对应的缓存中是否存在,若存在这直接返回,否则就执行
 方法,并将结果放入缓存.
 
-    /**
-     * Annotation indicating that the result of invoking a method (or all methods
-     * in a class) can be cached.
-     *
-     * <p>Each time an advised method is invoked, caching behavior will be applied,
-     * checking whether the method has been already invoked for the given arguments. A
-     * sensible default simply uses the method parameters to compute the key, but a SpEL
-     * expression can be provided via the {@link #key} attribute, or a custom
-     * {@link org.springframework.cache.interceptor.KeyGenerator KeyGenerator} implementation
-     * can replace the default one (see {@link #keyGenerator}).
-     *
-     * <p>If no value is found in the cache for the computed key, the method is invoked
-     * and the returned value is used as the cache value.
-     */
+       * Annotation indicating that the result of invoking a method (or all methods
+       * in a class) can be cached.
+       *
+       * <p>Each time an advised method is invoked, caching behavior will be applied,
+       * checking whether the method has been already invoked for the given arguments. A
+       * sensible default simply uses the method parameters to compute the key, but a SpEL
+       * expression can be provided via the {@link #key} attribute, or a custom
+       * {@link org.springframework.cache.interceptor.KeyGenerator KeyGenerator} implementation
+       * can replace the default one (see {@link #keyGenerator}).
+       *
+       * <p>If no value is found in the cache for the computed key, the method is invoked
+       * and the returned value is used as the cache value.
+
 
 
 下面是注解中的属性配置:
