@@ -1,6 +1,6 @@
 ---
 layout: post
-title: SpringMVC学习
+title: 看SpringMVC文档的疑问
 category: 技术
 tags: Spring
 keywords:
