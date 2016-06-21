@@ -1336,3 +1336,289 @@ XML文件配置:
 更多的建议例子中,可以配置多个`ContentNegotiationManager`实例,分别包含一个定制的`ContentNegotiationStrategy`实例.例如,你可以使用处理媒体配置为`application/json`的`ContentNegotiationManager`配置`ExceptionHandlerExceptionResolver`.或者你可以使用一些逻辑来定制使用媒体类型的策略.
 
 ### View Controllers
+这是定义一个`ParameterizableViewController`的捷径,在执行的时候,它会立即跳转到一个视图.在没有逻辑控制器执行前就会返回response.
+
+下面是一个映射"/"到一个叫"home"的视图的例子:
+
+
+          @Configuration
+          @EnableWebMvc
+          public class WebConfig extends WebMvcConfigurerAdapter {
+              @Override
+              public void addViewControllers(ViewControllerRegistry registry) {
+                  registry.addViewController("/").setViewName("home");
+              }
+          }
+
+xml中的配置如下:
+
+        <mvc:view-controller path="/" view-name="home"/>
+
+### View Resolvers
+MVC的视图解决器注册非常简单.下面的例子是使用FreeMarker HTML模板 和 Jackson作为默认视图渲染,配置内容协商视图的一个解决方案:
+
+        @Configuration
+        @EnableWebMvc
+        public class WebConfig extends WebMvcConfigurerAdapter {
+            @Override
+            public void configureViewResolvers(ViewResolverRegistry registry) {
+                registry.enableContentNegotiation(new MappingJackson2JsonView());
+                registry.jsp();
+            }
+        }
+
+xml文件中,可按如下配置:
+
+        <mvc:view-resolvers>
+          <mvc:content-negotiation>
+            <mvc:default-views>
+              <bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView"/>
+            </mvc:default-views>
+          </mvc:content-negotiation>
+          <mvc:jsp/>
+        </mvc:view-resolvers>
+
+注意,FreeMarter,Velocity,Tiles,和Groovy Markup都需要配置底层的视图技术
+
+MVC命名空间下提供专用的元素;来进行配置,如下是一个使用FreeMarter的配置:
+
+        <mvc:view-resolvers>
+            <mvc:content-negotiation>
+                <mvc:default-views>
+                    <bean class="org.springframework.web.servlet.view.json.MappingJackson2JsonView"/>
+                </mvc:default-views>
+            </mvc:content-negotiation>
+            <mvc:freemarker cache="false"/>
+        </mvc:view-resolvers>
+
+        <mvc:freemarker-configurer>
+            <mvc:template-loader-path location="/freemarker"/>
+        </mvc:freemarker-configurer
+
+
+使用java代码的配置:
+
+        @Configuration
+        @EnableWebMvc
+        public class WebConfig extends WebMvcConfigurerAdapter {
+            @Override
+            public void configureViewResolvers(ViewResolverRegistry registry) {
+                registry.enableContentNegotiation(new MappingJackson2JsonView());
+                registry.freeMarker().cache(false);
+            }
+
+            @Bean
+            public FreeMarkerConfigurer freeMarkerConfigurer() {
+                FreeMarkerConfigurer configurer = new FreeMarkerConfigurer();
+                configurer.setTemplateLoaderPath("/WEB-INF/");
+                return configurer;
+            }
+        }
+
+### Serving of Resources
+这个选项通过`ResourceHttpRequestHandler`配置 `Resource`位置 允许一个指定的url正则表达式请求资源文件.支持一个方便的方式服务静态资源文件.`cache-period`属性可以用来设置过期时间(Page Speed 和 YSlow 建议设置为1年),可以使客户端更加高效的使用.这个处理器也会评估`last-modification`请求头(如果有的话),适当的情况下返回304.避免已经在客户端缓存了资源的不必要的请求.下面的例子是,映射url正则`/resources/**`到一个应用根目录的`public-resources`文件夹下面.
+
+        @Configuration
+        @EnableWebMvc
+        public class WebConfig extends WebMvcConfigurerAdapter {
+            @Override
+            public void addResourceHandlers(ResourceHandlerRegistry registry) {
+                registry.addResourceHandler("/resources/**").addResourceLocations("/public-resources/");
+            }
+        }
+
+xml文件中的配置:
+
+        <mvc:resources mapping="/resources/**" location="/public-resources/"/>        
+
+使用一年的缓存有效期设置,保证最大程度的浏览器使用和减少http请求.
+Java代码配置:
+
+          @Configuration
+          @EnableWebMvc
+          public class WebConfig extends WebMvcConfigurerAdapter {
+              @Override
+              public void addResourceHandlers(ResourceHandlerRegistry registry) {
+                  registry.addResourceHandler("/resources/\**").addResourceLocations("/public-resources/").setCachePeriod(31556926);
+              }
+          }
+
+xml文件中的配置:
+
+          <mvc:resources mapping="/resources/\**" location="/public-resources/" cache-period="31556926"/>
+
+上面的`mapping`属性是一个Ant 风格的正则表达式(由`SimpleUrlHandlerMapping`使用),`location`属性指定一个或多个有效的资源文件夹位置(多资源文件夹使用逗号分割).下面的例子是配置一个类路径下的文件夹:
+
+java代码配置:
+
+          @EnableWebMvc
+          @Configuration
+          public class WebConfig extends WebMvcConfigurerAdapter {
+                @Override
+                public void addResourceHandlers(ResourceHandlerRegistry registry) {
+                    registry.addResourceHandler("/resources/\**").addResourceLocations("/", "classpath:/META-INF/public-web-resources/");
+                }
+          }
+
+xml文件配置:
+
+          <mvc:resources mapping="/resources/\**" location="/, classpath:/META-INF/public-web-resources/"/>
+
+当服务器端重新部署了一个新版本的资源文件时.你可能需要强制客户端去请求一个新的部署版本. 版本化的URL由framework和一个配置的资源处理链支持.资源处理链由一个或多个`ResourceResoulver`和一个或者多个`ResourceTransformer`实例组成.他们一起可以提供任意解决方案和资源转换.
+
+* `VersionResourceResolver`可以根据不同的策略来配置.例如`FixedVersionStrategy`可以使用一个属性,一个日期,或者其他的信息来作为版本号.
+* `ContentVersionStrategy`使用请求的content来急速MD5码作为版本号(known as "fingerprinting" URLs)
+* `ContentVersionStrategy` 是一个好的默认选择,除了不可用的情况(例如一个JavaScript模块加载)
+
+可以对不同的url模板使用不同的版本策略,请记住 基于content计算版本号的方式是非常昂贵的,所以在生产环境对资源链应该开启缓存
+
+java配置例子:
+
+        @Configuration
+        @EnableWebMvc
+        public class WebConfig extends WebMvcConfigurerAdapter {
+            @Override
+            public void addResourceHandlers(ResourceHandlerRegistry registry) {
+                registry.addResourceHandler("/resources/\**")
+                        .addResourceLocations("/public-resources/")
+                        .resourceChain(true).addResolver(
+                            new VersionResourceResolver().addContentVersionStrategy("/\**"));
+            }
+        }
+
+xml文件配置例子:
+
+          <mvc:resources mapping="/resources/**" location="/public-resources/">
+              <mvc:resource-chain>
+                  <mvc:resource-cache />
+                  <mvc:resolvers>
+                    <mvc:version-resolver>
+                        <mvc:content-version-strategy patterns="/**"/>
+                    </mvc:version-resolver>
+                  </mvc:resolvers>
+              </mvc:resource-chain>
+          </mvc:resources>
+
+为了使上面的配置工作,应用也必须使用版本号渲染url,一个简单的方式是配置一个`ResourceUrlEncodingFilter`,用来包装response和覆盖`encodeUrl`方法.这在JSP,FreeMarker,Velocity和任何和会调用`encodeURL`方法来应答的视图技术中都能正常工作.此外,应用也可以直接使用`ResourceUrlProvider`bean,它会自动使用java配置和MVC命名空间声明使用.
+
+### Falling Back On the "Default" Servlet To Serve Resources
+这个是允许`DispatcherServlet`映射到"/"上(也就是覆盖了容器默认的Servlet),然而,这样也仍然允许静态资源请求由容器的默认Servlet来处理.使用URL映射"/\**"和最低优先级配置一个`DefaultServletHttpRequestHandler`映射到其他URL上.
+
+这个处理器会forword跳转所有请求到默认的Servlet上.因此,有个最重要的事情就是它必须放在所有URL`HandlerMappings`的最后.这里需要小心的是,如果你使用了`<mvc:annotation-driven>`或者你自己定制的`HandlerMapping`实例,请确保排序属性`order`小于`DefaultServletHttpRequestHandler`的排序属性(Integer.MAX_VALUE).
+
+使用默认配置开启这个特性:
+
+        @Configuration
+        @EnableWebMvc
+        public class WebConfig extends WebMvcConfigurerAdapter {
+            @Override
+            public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+                configurer.enable();
+            }
+        }
+
+或者在xml文件中:
+
+        <mvc:default-servlet-handler/>
+
+使用"/"servlet映射`RequestDispatcher`有个警告,就是这个默认Servlet是通过名字来检索的,而不是路径.在容器启动的时候`DefaultServletHttpRequestHandler`会尝试自动关联默认Servlet,对于已知的大多数主要Servlet容器来说,都是这样(包括Tomcat,Jetty,GlassFish,JBoss,Resin,WebLogic,和WebSphere).如果默认的Servlet已经使用一个不同的名字来定制,或者一个不同的Servlet 容器使用的默认Servlet名称是未知的,则默认Servlet的名字必须像下面的例子一样指明:
+
+        @Configuration
+        @EnableWebMvc
+        public class WebConfig extends WebMvcConfigurerAdapter {
+          @Override
+          public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+              configurer.enable("myCustomDefaultServlet");
+          }
+        }
+
+或者在xml文件中配置:
+
+          <mvc:default-servlet-handler default-servlet-name="myCustomDefaultServlet"/>
+
+### Path Matching
+这部分允许定制多种URL映射和路径映射的设置,更多细节,可查看[PathMatchConfigurer文档](http://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/web/servlet/config/annotation/PathMatchConfigurer.html).
+
+下面是一个java代码的配置:
+
+          @Configuration
+          @EnableWebMvc
+          public class WebConfig extends WebMvcConfigurerAdapter {
+              @Override
+              public void configurePathMatch(PathMatchConfigurer configurer) {
+                      configurer
+                            .setUseSuffixPatternMatch(true)
+                            .setUseTrailingSlashMatch(false)
+                            .setUseRegisteredSuffixPatternMatch(true)
+                            .setPathMatcher(antPathMatcher())
+                            .setUrlPathHelper(urlPathHelper());
+              }
+
+              @Bean
+              public UrlPathHelper urlPathHelper() {
+                  //...
+              }
+
+              @Bean
+              public PathMatcher antPathMatcher() {
+                  //...
+              }
+          }
+
+
+在xml文件中使用`<mvc:path-matching>`元素,也是一样的:
+
+        <mvc:annotation-driven>
+            <mvc:path-matching
+                suffix-pattern="true"
+                trailing-slash="false"
+                registered-suffixes-only="true"
+                path-helper="pathHelper"
+            path-matcher="pathMatcher"/>
+        </mvc:annotation-driven>
+
+        <bean id="pathHelper" class="org.example.app.MyPathHelper"/>
+        <bean id="pathMatcher" class="org.example.app.MyPathMatcher"/>
+
+### Advanced Customizations with MVC Java Config
+从上面的例子中你可以看到MVC的java配置和MVC的命名空间的配置支持高水平构建,并且不要求你有较深的Bean创建知识.它会帮助你集中焦点在你的应用需求上.但是,在某些点上,你可能需要更加细粒度的控制,或者你需要明白底层的配置.
+
+如果要朝着更加细粒度的控制,你需要明白bean的创建.在MVC java的配置中,你可以查看java文档和`WebMvcConfigurationSupport`中的`@Bean`方法.在这个类中的配置会自动的通过`@EnableWebMvc`注解进行引入.实际上如果你打开`@EnableWebMvc`,你可以看到`@Import`声明.
+
+下一步的更细粒度的控制是,定制`WebMvcConfigurationSupport`的beans创建属性.或者是支持你自己的实例.这个要求两件事情,1.移除`@EnableWebMvc`注解为了防止引入,2.扩展`DelegatingWebMvcConfiguration`.下面是一个`WebMvcConfigurationSupport`子类的例子:
+
+        @Configuration
+        public class WebConfig extends DelegatingWebMvcConfiguration {
+            @Override
+            public void addInterceptors(InterceptorRegistry registry){
+                // ...
+            }
+
+            @Override
+            @Bean
+            public RequestMappingHandlerAdapter requestMappingHandlerAdapter() {
+                // Create or let "super" create the adapter
+                // Then customize one of its properties
+            }
+        }
+
+注意:
+一个应用应该有且只有一个`DelegatingWebMvcConfiguration`或者`@EnableWebMvc`注解类的配置.因为它们俩都是注册相同声明的beans.
+
+使用这种方法修改beans,并不会妨碍你使用本章所示的任何更高级别的结构.`WebMvcConfigurerAdapter`子类和`WebMvcConfigurer`的实现仍然可以被使用.
+
+### Advanced Customizations with the MVC Namespace
+使用MVC命名空间来做更加细粒度的控制会更加难一点.
+
+如果需要更加细粒度的控制,而不是复制它提供的配置.可以考虑配置一个`BeanPostProcessor`用来关联你想要通过类型来定制然后修改必要属性的bean.下面是一个例子:
+
+        @Component
+        public class MyPostProcessor implements BeanPostProcessor {
+            public Object postProcessBeforeInitialization(Object bean, String name) throws BeansException {
+                if (bean instanceof RequestMappingHandlerAdapter) {
+                    // Modify properties of the adapter
+                }
+            }
+        }
+
+注意: 为了能够正常关联,`MyPostProcessor`需要被包含在一个`<component scan />`中,或者在xml文件中提供bean声明
