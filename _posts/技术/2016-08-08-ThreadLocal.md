@@ -99,7 +99,7 @@ ThreadLocalMap中使用 _*线性探测法*_ 解决Hash冲突.
             }
 
 ### InheritableThreadLocal
-`InheritableThreadLocal`和`ThreadLocal`类似,也是保存线程本地变量的, 差别是 `InheritableThreadLocal`中的变量可从父线程中继承过来, 即在创建新线程时,会将当前线程中的`InheritableThreadLocal`中的所有变量,复制一份到新创建线程的 `inheritableThreadLocals`中去.所以如果修改父线程中的变量,是不影响子线程中的本地变量的.复制代码如下:
+`InheritableThreadLocal`和`ThreadLocal`类似,也是保存线程本地变量的, 差别是 `InheritableThreadLocal`中的变量可从父线程中继承过来, 即在创建新线程时,会将当前线程中的`InheritableThreadLocal`中的所有变量,复制一份到新创建线程的 `inheritableThreadLocals`中去.所以如果修改父线程中的变量,是不影响子线程中的本地变量的复制代码如下:
 
 
         /**
