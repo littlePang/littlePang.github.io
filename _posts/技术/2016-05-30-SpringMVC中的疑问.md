@@ -11,7 +11,7 @@ description:
 
 
 ### 2. Ant-style path patterns 是什么?
-一种更加灵活的路径匹配方式([说明](http://www.cnblogs.com/selfchange/p/spring.html))
+一种更加灵活的路径匹配方式([说明](http://www.cnblogs.com/selfchange/p/spring.html  ))
 
 ### 3. Reflected file download (RFD) attack (P451) 反射文件下载攻击?
 问题出处 [传送门]{http://pivotal.io/security/cve-2015-5211}
