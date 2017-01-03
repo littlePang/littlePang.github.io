@@ -18,6 +18,7 @@ Spring Framwork框架包含20个模块,各个模块包含不同的特性.这些�
 ![](/assets/picture/2016-12-28_1.png)
 
 # 模块分类说明
+
 ## Core Container
 
 由 `spring-core`,`spring-beans`,`spring-context`,`spring-contest-support`,`spring-expression`(Spring Expression Language) 这些包组成.
@@ -73,4 +74,4 @@ web层包括 `spring-web`, `spring-webmvc`, `spring-websocket`, 以及 `spring-w
 
 
 # 参考
-http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#spring-introduction
+[http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#spring-introduction](http://docs.spring.io/spring/docs/current/spring-framework-reference/htmlsingle/#spring-introduction)
