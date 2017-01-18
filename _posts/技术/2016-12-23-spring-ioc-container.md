@@ -22,6 +22,7 @@ Spring对`ApplicationContext`提供了一些开箱即用的实现.在一个独�
 
 下图是Spring如何工作的一个简单说明:
 
+![](/assets/picture/2017-01-03_1.png)
 
 一些可能使用到的注解:
 
