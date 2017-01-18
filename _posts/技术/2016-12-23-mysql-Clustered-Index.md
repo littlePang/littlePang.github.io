@@ -1,3 +1,4 @@
+ ---
  layout: post
  title: mysql InnoDb Clustered Index
  category: 技术
@@ -24,4 +25,5 @@
  因此,如果聚集索引锁使用的列非常大的话,二级索引就会使用更多的空间,所以聚集索引的key越小越好.
 
  # 参考
- +http://dev.mysql.com/doc/refman/5.6/en/innodb-index-types.html
+
+ [http://dev.mysql.com/doc/refman/5.6/en/innodb-index-types.html](http://dev.mysql.com/doc/refman/5.6/en/innodb-index-types.html)
