@@ -447,6 +447,7 @@ bean配置:
 bean作用域(bean scope)
 
 spring支持 5 种作用域,其中3种,只有在使用 webApplicationContext的时候才有用.
+
 * singleton : spring默认就是单例模式,即所有bean都是单例的
 * prototype : 这中作用域,每次获取的都是新bean
 * request : 即每一个http请求中都会生成新的bean,在web环境的ApplicationContext中才有效
@@ -594,6 +595,7 @@ spring提供的`BeanPostProcessor`的其中一个实现是`RequiredAnnotationBea
 
 ### 基于注解的容器配置
 xml中配置了`<context:annotation-config/>`(这个配置只在当前容器中起作用,例如只在`WebApplicationContext`中加了这个配置,则它只会处理controller)这个时,默认注册下面这些处理器:
+
 * `AutowiredAnnotationBeanPostProcessor`: 默认处理`@Autowired`和`@Value`注解(如果能加载到`@javax.inject.Inject`,则也会处理).也可自定义需注入依赖的注解类型
 * `CommonAnnotationBeanPostProcessor`: 默认处理`@javax.annotation.PostConstruct`,`javax.annotation.PreDestroy`,`javax.annotation.Resource`和`javax.xml.ws.WebServiceRef`注解
 * `PersistenceAnnotationBeanPostProcessor`(该类在spring-orm包中): 处理`@javax.persistence.PersistenceUnit`,`@javax.persistence.PersistenceContext`,`@javax.persistence.EntityManagerFactory`以及`@javax.persistence.EntityManager`
