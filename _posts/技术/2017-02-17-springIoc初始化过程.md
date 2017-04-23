@@ -272,7 +272,7 @@ doLoadBeanDefinitions() 主要代码:
 注册所有的`BeanPostProcessor`,并按钮实现了`Ordered`的顺序排序, 以便在bean真正实例化的时候进行调用.
 
 # initMessageSource()
-实例化配置中的`MessageSource`实现. _*暂不知这个MessageSource是使用场景,挖坑待填*_
+实例化配置中的`MessageSource`实现. _*暂不知这个MessageSource的使用场景,挖坑待填*_ ([坑已填](2017-03-06-Spring_MessageSource的使用))
 
 # initApplicationEventMulticaster()
 初始化`ApplicationEventMulticaster`实现,为后续应用事件广播,准备
