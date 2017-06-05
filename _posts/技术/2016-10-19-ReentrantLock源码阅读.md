@@ -2,7 +2,7 @@
 layout: post
 title: ReentrantLock源码阅读
 category: 学习
-tags: java concurrent
+tags: jdk concurrent
 keywords:
 description:
 ---
