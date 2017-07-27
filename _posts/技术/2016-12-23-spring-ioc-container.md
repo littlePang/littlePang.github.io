@@ -7,6 +7,8 @@ keywords:
 description:
 ---
 
+[TOC]
+
 # 简介
 
 `org.springframework.beans` 和 `org.springframework.context` 这俩包是 Spring IoC容器的基础. `BeanFactory`接口提供任何类型对象的高级配置机制.`ApplicationContext`是
