@@ -200,3 +200,116 @@ Spring的集成测试支持主要包括以下一些目标：
 
 
 关于测试框架的一些扩张说明，[传送门](https://docs.spring.io/spring/docs/current/spring-framework-reference/testing.html#testcontext-framework).
+
+
+#### Working with Web Mocks
+
+为了提供综合的web测试支持，Spring3.2默认提供并开启 `ServletTestExecutionListener` 进行支持。在测试 `WebApplicationContext` 的时候，`TestExecutionListener` 会设置一个默认的thread-localde的 `RequestContextHolder`，在每个测试方法运行前，创建一个 `MockHttpServletRequest`，`MockHttpServletResponse`和 `ServletWebRequest`.
+
+一旦你在测试中加载了 `WebApplicationContext` 则其他相关的mock类也都可使用，例如在设置一些在web组件中的前置校验。以下是一个使用的例子，需要注意的是 `WebApplicationContext` 和 `MockServletContext` 是在整个测试组中缓存起来的。其他的mock对象由 `ServletTestExecutionListener`管理。
+
+          @WebAppConfiguration
+          @ContextConfiguration
+          public class WacTests {
+
+                  @Autowired
+                  WebApplicationContext wac; // cached
+
+                  @Autowired
+                  MockServletContext servletContext; // cached
+
+                  @Autowired
+                  MockHttpSession session;
+
+                  @Autowired
+                  MockHttpServletRequest request;
+
+                  @Autowired
+                  MockHttpServletResponse response;
+
+                  @Autowired
+                  ServletWebRequest webRequest;
+
+                  //...
+          }
+
+#### 上下文的缓存
+
+多个 test 之间的 ApplicationContext 或者 WebApplicationContext 的复用是基于 配置文件地址，activeProfiles 等配置的唯一性约束确定的，及相同配置的上下文，可进行复用。具体信息看这里：[传送门](https://docs.spring.io/spring/docs/current/spring-framework-reference/testing.html#testcontext-ctx-management-caching)          
+
+#### 上下文的继承
+
+[传送门](https://docs.spring.io/spring/docs/current/spring-framework-reference/testing.html#testcontext-ctx-management-ctx-hierarchies)
+
+#### 测试作用域为request或者session级别的bean
+
+[传送门](https://docs.spring.io/spring/docs/current/spring-framework-reference/testing.html#testcontext-web-scoped-beans)
+
+
+### 事务管理
+
+在测试框架中，事务由 `TransactionTestExecutionListener` 管理，如果在测试类上没有申明 `@TestExecutionListeners`, 则它是默认开启的。但是，你必须要在 `ApplicationContext` 中配置了 `PlatformTransactionManager`，此外，在测试类或者方法上使用了 `@Transactional`
+
+事务管理测试抽象类: AbstractTransactionalJUnit4SpringContextTests, 使用：[传送门](https://docs.spring.io/spring/docs/current/spring-framework-reference/testing.html#testcontext-tx-programmatic-tx-mgt)
+
+### 执行SQL脚本
+
+`spring-jdbc`模块提供初始化内嵌数据库([Embedded database support](https://docs.spring.io/spring/docs/current/spring-framework-reference/data-access.html#jdbc-embedded-database-support))或者执行SQL脚本的支持([Testing data access logic with an embedded database](https://docs.spring.io/spring/docs/current/spring-framework-reference/data-access.html#jdbc-embedded-database-dao-testing))。 也可使用 `@Sql` 执行脚本
+
+spring提供以下方法可在集成测试中使用编程的方式执行脚本初始化
+
+* org.springframework.jdbc.datasource.init.ScriptUtils
+* org.springframework.jdbc.datasource.init.ResourceDatabasePopulator
+* org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests
+* org.springframework.test.context.testng.AbstractTransactionalTestNGSpringContextTests
+
+使用 `@Sql` 执行脚本时的路径语意：[传送门](https://docs.spring.io/spring/docs/current/spring-framework-reference/testing.html#testcontext-executing-sql-declaratively)
+
+### 并行执行测试
+
+Spring5.0 支持并行测试 ：[传送门](https://docs.spring.io/spring/docs/current/spring-framework-reference/testing.html#testcontext-parallel-test-execution)
+
+### 测试框架支持的类
+
+@RunWith(SpringJUnit4ClassRunner.class) 和 @RunWith(SpringRunner.class) 是一样的。如果想使用其他还有一些 第三方框架提供的测试runner(例如：MockitoJUnitRunner)，可查看 Spring提供的JUnit支持进行替换（[Spring’s support for JUnit rules](https://docs.spring.io/spring/docs/current/spring-framework-reference/testing.html#testcontext-junit4-rules)）。
+
+在包 `org.springframework.test.context.junit4.rules` 下，spring提供了一些Junit4的一些规则支持
+
+* SpringClassRule
+* SpringMethodRule
+
+可使用这样方式，选择其他的非Spring提供的runner：
+
+            // Optionally specify a non-Spring Runner via @RunWith(...)
+            @ContextConfiguration
+            public class IntegrationTest {
+
+               @ClassRule
+               public static final SpringClassRule springClassRule = new SpringClassRule();
+
+               @Rule
+               public final SpringMethodRule springMethodRule = new SpringMethodRule();
+
+               @Test
+               public void testMethod() {
+                  // execute test logic...
+               }
+            }
+
+使用 JUnit Jupiter的一些扩展：[传送门](https://docs.spring.io/spring/docs/current/spring-framework-reference/testing.html#testcontext-junit-jupiter-extension)
+
+## Spring MVC 测试框架
+
+测试框架提供一套可以在JUnit，TestNG 或者其他测试框架中使用的流式编程接口 ,它都是建立在 spring-test模块中mock对象上的 ([ Servlet API mock objects](https://docs.spring.io/spring-framework/docs/5.0.0.RELEASE/javadoc-api/org/springframework/mock/web/package-summary.html)).因此不要运行Servlet容器。
+
+### 服务端的测试
+
+测试的例子，请查看这里 : [传送门](https://github.com/spring-projects/spring-framework/blob/master/spring-test/src/test/java/org/springframework/test/web/servlet/samples/context/XmlConfigTests.java).
+
+使用详情：[传送门](https://docs.spring.io/spring/docs/current/spring-framework-reference/testing.html#spring-mvc-test-server)
+
+Html请求的单测 ： [传送门](https://docs.spring.io/spring/docs/current/spring-framework-reference/testing.html#spring-mvc-test-server)
+
+# 其他资源
+
+一些测试框架的资源说明: [传送门](https://docs.spring.io/spring/docs/current/spring-framework-reference/testing.html#testing-resources)
