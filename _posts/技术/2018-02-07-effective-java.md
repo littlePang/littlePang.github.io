@@ -23,6 +23,60 @@ description:
 
 ## 遇到多个构造器参数时要考虑用构建器
 
+例如如下这种方式。
+
+1. 在属性很多的情况下，构造器的参数将变得非常多，降低代码的易读性。
+
+2. 而如果使用默认无参构造器先实例化对象，然后再将属性逐个set的方式，则由于构造过程被分到了几个调用中，那么 JavaBean 在构造过程中，可能处于不一致的状态
+
+        public class User {
+          private String name;
+          private String password;
+
+          public User() {
+          }
+
+          public User(String name, String password) {
+            this.name = name;
+            this.password = password;
+          }
+
+          // getter and setter
+        }
+
+可将以上代码改造成如下的方式，使用Builder构建器，并且可以将User的属性设置为final，使其成为不可变类，从而避免构建过程中处于不一致状态。
+
+        public class User {
+          private String name;
+          private String password;
+
+          public User(String name, String password) {
+            this.name = name;
+            this.password = password;
+          }
+
+          // getter and setter
+
+          public static class Builder {
+              private String name;
+              private String password;
+
+              public Builder setName(String name) {
+                this.name = name;
+                return this;
+              }
+
+              public Builder setPassword(String password) {
+                this.password = password;
+                return this;
+              }
+
+              public User build() {
+                return new User(name, password);
+              }
+          }
+        }
+
 ## 用私有构造器或者枚举类型强化singleton属性
 
 ## 通过私有构造器强化不可实例化的能力
