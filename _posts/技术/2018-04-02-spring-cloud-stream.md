@@ -53,3 +53,17 @@ bindings中的 destination 对应的group 如果不设置则会将其声明为�
 详情：RabbitExchangeQueueProvisioner.provisionConsumerDestination
 
 尝试rabbitmq使用：http://tryrabbitmq.com/
+
+
+# 注解绑定
+
+StreamListenerAnnotationBeanPostProcessor
+
+
+# spring-rabbitmq 拉取mq消息
+
+org.springframework.amqp.rabbit.listener.BlockingQueueConsumer.InternalConsumer#handleDelivery
+
+# rabbitmq消息转 Message
+
+org.springframework.amqp.rabbit.listener.BlockingQueueConsumer#handle
