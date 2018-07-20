@@ -67,3 +67,29 @@ jupyter官网：[http://jupyter.org/](http://jupyter.org/)
 
       // 保存到文件
       all_user_df.to_csv("/Users/jaky.wang/data.csv")
+
+
+## 多个array在同一图上做曲线图
+
+common_all_consumed 和 all_consumed 都是普通的 list
+
+      #创建figure窗口
+      plt.figure(num=3, figsize=(15, 8))
+
+      plt.plot(x_axix, np.array(common_all_consumed), color='red')
+      plt.plot(x_axix, np.array(all_consumed), color='black')
+
+      #设置坐标轴范围
+      plt.xlim((0, 23))
+      plt.ylim((0, 1500000000))
+      #设置坐标轴名称
+      plt.xlabel('time')
+      plt.ylabel('consumed')
+      #设置坐标轴刻度
+      my_x_ticks = np.arange(0, 24, 1)
+      my_y_ticks = np.arange(0, 1500000000, 50000000)
+      plt.xticks(my_x_ticks)
+      plt.yticks(my_y_ticks)
+
+      #显示出所有设置
+      plt.show()
