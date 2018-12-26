@@ -100,7 +100,7 @@ es以json作为文档存储方式，使文档更加易于扩展。
 
         curl -XGET 'http://127.0.0.1:9201/blogs/user/1?_source&pretty'
 
-检查文档是否存在(自会返回http头)，存在则code为200，否则为404
+检查文档是否存在(只会返回http头)，存在则code为200，否则为404
 
         curl -i -XHEAD http://127.0.0.1:9201/blogs/user/1
 
